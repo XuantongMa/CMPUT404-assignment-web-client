@@ -79,7 +79,7 @@ class HTTPClient(object):
         code = 500
         body = ""
         
-        # Parst URLs to split URLs so that we can easily get the different components
+        # Parse URLs to split URLs so that we can easily get the different components
         o = urlparse(url)
         
         # Get the path and port from the URLs
@@ -96,7 +96,7 @@ class HTTPClient(object):
         # connect to the server
         self.connect(o.hostname,port)
 
-        # form a GET request and send it out
+        # form a request and send it out
         status_code = "GET {} HTTP/1.1\r\n".format(path)
         host = "Host: {}\r\n".format(o.hostname)
         connection = "Connection: close\r\n\r\n"
