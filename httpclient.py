@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# Copyright 2022 Abram Hindle, Xuantong Ma, https://github.com/tywtyw2002, and https://github.com/treedust
+# Copyright 2022 Abram Hindle, https://github.com/tywtyw2002, and https://github.com/treedust, Xuantong Ma
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,14 +42,18 @@ class HTTPClient(object):
         return None
 
     def get_code(self, data):
+        # get the stauts code from data, we split the data by a space
+        # data format example: HTTP/1.0 200 OK
         code = int(data.split(' ')[1])
         return code
 
     def get_headers(self,data):
+        # get the headers from data
         headers = data.split('\r\n\r\n')[0]
         return headers
 
     def get_body(self, data):
+        # get the content body from data
         body = data.split('\r\n\r\n')[1]
         return body
     
@@ -75,7 +79,10 @@ class HTTPClient(object):
         code = 500
         body = ""
         
+        # Parst URLs to split URLs so that we can easily get the different components
         o = urlparse(url)
+        
+        # Get the path and port from the URLs
         if o.path:
             path = o.path
         else:
@@ -85,14 +92,18 @@ class HTTPClient(object):
             port = o.port
         else:
             port = 80
+
+        # connect to the server
         self.connect(o.hostname,port)
 
+        # form a GET request and send it out
         status_code = "GET {} HTTP/1.1\r\n".format(path)
         host = "Host: {}\r\n".format(o.hostname)
         connection = "Connection: close\r\n\r\n"
         send = status_code + host + connection
         self.sendall(send)
 
+        # receive a response from the socket and get the body and status code
         response = self.recvall(self.socket)
         body = self.get_body(response)
         code = self.get_code(response)
@@ -103,7 +114,8 @@ class HTTPClient(object):
     def POST(self, url, args=None):
         code = 500
         body = ""
-
+        
+        # similar to GET(), but we need to check if the args is empty or not
         o = urlparse(url)
         if o.path:
             path = o.path
@@ -118,9 +130,10 @@ class HTTPClient(object):
         if args == None:
             args = ''
         else:
-            args = urlencode(args)
+            args = urlencode(args) # method from urllib to convert strings to urlencode and query string format
         self.connect(o.hostname,port)
 
+        # form a request and send it out
         status_code = "POST {} HTTP/1.1\r\n".format(path)
         host = "Host: {}\r\n".format(o.hostname)
         content_type = "Content-Type: application/x-www-form-urlencoded\r\n"
