@@ -79,7 +79,7 @@ class HTTPClient(object):
         code = 500
         body = ""
         
-        # Parst URLs to split URLs so that we can easily get the different components
+        # Parse URLs to split URLs so that we can easily get the different components
         o = urlparse(url)
         
         # Get the path and port from the URLs
@@ -96,7 +96,7 @@ class HTTPClient(object):
         # connect to the server
         self.connect(o.hostname,port)
 
-        # form a GET request and send it out
+        # form a request and send it out
         status_code = "GET {} HTTP/1.1\r\n".format(path)
         host = "Host: {}\r\n".format(o.hostname)
         connection = "Connection: close\r\n\r\n"
@@ -105,8 +105,11 @@ class HTTPClient(object):
 
         # receive a response from the socket and get the body and status code
         response = self.recvall(self.socket)
-        body = self.get_body(response)
         code = self.get_code(response)
+        body = self.get_body(response)
+
+        # print the result to stdout
+        print("Code: {}\nBody: {}".format(code, body))
         
         self.close()
         return HTTPResponse(code, body)
@@ -143,9 +146,13 @@ class HTTPClient(object):
         self.sendall(send)
 
         response = self.recvall(self.socket)
-        body = self.get_body(response)
         code = self.get_code(response)
+        body = self.get_body(response)
         
+        # print the result to stdout
+        # print('#######################################')
+        print("Code: {}\nBody: {}".format(code, body))
+
         self.close()
         return HTTPResponse(code, body)
 
